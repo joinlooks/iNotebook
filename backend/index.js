@@ -7,9 +7,9 @@ connectDB();
 const app = express();
 app.use(express.json());
 
-app.get("/", (req, res) => {
-	res.send("Hello World");
-});
+// Available routes
+app.use("/api/auth", require("./routes/auth"));
+app.use("/api/notes", require("./routes/notes"));
 
 app.listen(PORT, () => {
 	console.log(`iNotebook backend server on : http://localhost:${PORT}`);
