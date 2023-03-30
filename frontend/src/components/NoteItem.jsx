@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import noteContext from "../context/noteContext";
 
-const NoteItem = ({ note }) => {
+const NoteItem = ({ note, updateNote, showAlert }) => {
 	const { deleteNote } = useContext(noteContext);
 
 	return (
@@ -15,12 +15,16 @@ const NoteItem = ({ note }) => {
 							<i
 								style={{ cursor: "pointer" }}
 								className="bi bi-pencil-square mx-2"
+								onClick={() => updateNote(note)}
 							></i>
 							{/* To delete note */}
 							<i
 								style={{ color: "red", cursor: "pointer" }}
 								className="bi bi-trash3"
-								onClick={() => deleteNote(note._id)}
+								onClick={() => {
+									deleteNote(note._id);
+									showAlert("Note deleted successfully", "success");
+								}}
 							></i>
 						</div>
 					</div>

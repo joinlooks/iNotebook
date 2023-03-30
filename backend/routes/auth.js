@@ -20,10 +20,11 @@ router.post(
 		}),
 	],
 	async (req, res) => {
+		let success = false;
 		// If there are any errors in validation, then return Bad Request and the errors
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
-			return res.status(400).json({ errors: errors.array() });
+			return res.status(400).json({ success, errors: errors.array() });
 		}
 
 		try {
@@ -32,9 +33,10 @@ router.post(
 			// If a user with this email already exists, return Bad Request
 			let user = await User.findOne({ email });
 			if (user) {
-				return res
-					.status(400)
-					.json({ error: "Sorry, a user with this email already exists" });
+				return res.status(400).json({
+					success,
+					error: "Sorry, a user with this email already exists",
+				});
 			}
 
 			// Hashing the password using bcrypt
@@ -46,7 +48,8 @@ router.post(
 			// Create a JWT token and return it
 			const data = { user: { id: user.id } };
 			const authToken = jwt.sign(data, JWT_SECRET);
-			res.json({ authToken });
+			success = true;
+			res.json({ success, authToken });
 
 			//
 		} catch (error) {
@@ -64,10 +67,11 @@ router.post(
 		body("password", "Password cannot be blank").not().isEmpty(),
 	],
 	async (req, res) => {
+		let success = false;
 		// If there are any errors in validation, then return Bad Request and the errors
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
-			return res.status(400).json({ errors: errors.array() });
+			return res.status(400).json({ success, errors: errors.array() });
 		}
 
 		try {
@@ -75,23 +79,26 @@ router.post(
 
 			const user = await User.findOne({ email });
 			if (!user) {
-				return res
-					.status(400)
-					.json({ error: "Please try to login with correct credentials" });
+				return res.status(400).json({
+					success,
+					error: "Please try to login with correct credentials",
+				});
 			}
 
 			// Compare the password with the hashed password
 			const passwordCompare = await bcrypt.compare(password, user.password);
 			if (!passwordCompare) {
-				return res
-					.status(400)
-					.json({ error: "Please try to login with correct credentials" });
+				return res.status(400).json({
+					success,
+					error: "Please try to login with correct credentials",
+				});
 			}
 
 			// Create a JWT token and return it
 			const data = { user: { id: user.id } };
 			const authToken = jwt.sign(data, JWT_SECRET);
-			res.json({ authToken });
+			success = true;
+			res.json({ success, authToken });
 
 			//
 		} catch (error) {
